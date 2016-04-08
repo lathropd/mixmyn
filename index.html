@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>mixmyn</title>
+
+
+
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+
+
+
+
+
+  </head>
+
+  <body>
+
+      <h1>MixMyn, an audio call mixer/recorder for podcasting</h1>
+
+  <p>This is the parent page. Eventually this will be where each client's mix-minus is generated and kicked back.</p>
+
+  <button id="recordButton">record</button>
+  <button id="stopButton">stop</button>
+	<button id="callButton">call</button>
+	<input id="callInput" placeholder="enter ID for remote page"></input>
+
+  <audio  autoplay="true" id="incomingAudio"></audio>
+  <h2>Recordings</h2>
+  <ul id="recordingslist"></ul>
+  <button id="playButton">Play</button>
+  <h2>Log</h2>
+  <pre id="log"></pre>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js'></script>
+<script src='js/peer.min.js'></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+<script src='http://webrtc.github.io/adapter/adapter-latest.js'></script>
+
+        <script src="js/index.js"></script>
+
+
+
+
+  </body>
+</html>
