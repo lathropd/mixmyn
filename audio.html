@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>MixMyn mixer page</title>
+  <style type='text/css'>
+    ul { list-style: none; }
+    #recordingslist audio { display: block; margin-bottom: 10px; }
+  </style>
+  <script src="//webrtc.github.io/adapter/adapter-latest.js"></script>
+	<script   src="//code.jquery.com/jquery-2.2.3.min.js"   integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="   crossorigin="anonymous"></script>
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="//cdn.peerjs.com/0.3/peer.min.js"></script>
+	<script>
+	function __log ( p ) {
+		// allows me to changing logging behavior
+		console.log( p );
+	}
+	</script>
+</head>
+<body>
+
+  <h1>MixMyn, an audio call mixer/recorder for podcasting</h1>
+
+  <p>This is the parent page. Eventually this will be where each client's mix-minus is generated and kicked back.</p>
+
+  <button id="recordButton">record</button>
+  <button id="stopButton">stop</button>
+	<button id="callButton">call</button>
+	<input id="callInput" placeholder="enter ID for remote page"></input>
+
+  <audio  autoplay="true" id="incomingAudio"></audio>
+  <h2>Recordings</h2>
+  <ul id="recordingslist"></ul>
+  <button id="playButton">Play</button>
+  <h2>Log</h2>
+  <pre id="log"></pre>
+
+
+
+  <script>
+
+
+		var peer = new Peer({key: 'tpd3t4sdjkf39pb9'});
+
+
+		peer.on('open', function(id) {
+  		__log('My peer ID is: ' + id);
+		});
+
+
+
+
+
+    var source = {};
+    var scriptNode = {};
+		var audioStreamIn = {};
+		var audioStreamOut = {};
+		// var call = {};
+		var microphone;
+    var playButton = document.getElementById("playButton");
+		var recordButton = document.getElementById("recordButton");
+		var callButton = document.getElementById("callButton");
+		var callInput = document.getElementById("callInput");
+		var stopButton = document.getElementById("stopButton");
+		var incomingAudio = document.getElementById("incomingAudio");
+
+
+		if (window.AudioContext) {
+			// "gum" = getUserMedia
+	    function gumSuccess (e) {};
+	    function gumError (e) {};
+	    var audioCtx = new AudioContext();;
+	    // wire up play button
+
+			navigator.mediaDevices.getUserMedia({ audio: true, video:false })
+				 .then( function(stream) {
+					 microphone = audioCtx.createMediaStreamSource(stream);
+					 window.localStream = stream;
+					 __log(microphone);
+				 })
+				 .catch( function (error) {
+					 __log("The following error occurred: " + error.name);
+					 __log(error);
+				}); // end getUserMedia callback
+
+	    playButton.onclick = function(e) {
+				__log(e);
+	    }
+
+			callButton.onclick = function (e) {
+				__log(e);
+				var remoteId = callInput.value;
+				var call =  peer.call(remoteId, window.localStream);
+				console.log("calling!!!!!");
+				console.log(URL.createObjectURL(window.localStream))
+				call.on('stream', function(stream) {
+					// `stream` is the MediaStream of the remote peer.
+					// Here you'd add it to an HTML video/canvas element.
+					// stream.connect(audioCtx.destination);
+					console.log("call answered!!!!!!");
+					// stream.connect(audioCtx.destination);
+					// stream.connect(audioCtx.destination);
+				});
+			};
+
+			peer.on('call', function(call) {
+			  // Answer the call, providing our mediaStream
+				console.log("incoming call!!!!!")
+			  call.answer(window.localStream);
+				// call.answer();
+				call.on("stream", function (stream){
+					console.log(stream);
+					var incomingStream = audioCtx.createMediaStreamSource(stream);
+					incomingStream.connect(audioCtx.destination);
+					console.log("call connected!");
+				});
+			});
+
+
+
+
+			recordButton.onclick = function(e) {
+				__log(e);
+				navigator.mediaDevices.getUserMedia({ audio: true, video:false })
+					 .then( function(stream) {
+						 __log(audioCtx);
+						 var microphone = audioCtx.createMediaStreamSource(stream);
+						 var analyzer = audioCtx.createAnalyser();
+						 microphone.connect(analyzer);
+						 analyzer.connect(audioCtx.destination);
+						 __log(microphone);
+					 })
+					 .catch( function (error) {
+						 __log("The following error occurred: " + error.name);
+						 __log(error);
+					}); // end getUserMedia callback
+			}
+
+
+			stopButton.onclick = function(e) {
+				__log(e);
+				audioCtx.destination
+
+
+			}
+
+
+	    // When the buffer source stops playing, disconnect everything
+	    source.onended = function() {
+	      source.disconnect(scriptNode);
+	      scriptNode.disconnect(audio.destination);
+	    }
+
+		} else {
+			__log("no AudioContext available");
+		}
+
+
+				//
+				// conn.on('open', function() {
+			  // // Receive messages
+			  // conn.on('data', function(data) {
+			  //   	console.log('Received', data);
+			  // 		// Send messages
+			  // 		conn.send('Hello!');
+				// }
+
+
+			// peer.on('connection', function(conn) {
+			// 	conn.on('data', function (data) {
+			// 		__log("--INCOMING--:", data);
+			// 	})
+			// });
+
+      </script>
+
+</body>
+</html>
