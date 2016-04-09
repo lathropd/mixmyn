@@ -25,7 +25,7 @@ function __log ( p ) {
 }
 
 
-var peer = new Peer( {host: 'peers-mixm.herokuapp.com', port: 443, secure: true});// 'tpd3t4sdjkf39pb9'});
+var peer = new Peer( 'daniel',  {host: 'peers-mixm.herokuapp.com', port: 443, secure: true});// 'tpd3t4sdjkf39pb9'});
 // var peer = new Peer('daniel', {host: 'peers-mixm.herokuapp.com', port: 443, secure: true});// 'tpd3t4sdjkf39pb9'});
 		// force it to use SSL. this needs some kind of shim within peerjs
 
